@@ -36,7 +36,7 @@ jobs:
         working-directory: client
         run: npm run build
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_STORAGE_MODE: local
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,6 +1,11 @@
 # Student Record Manager
 
-A simple MERN Stack application for managing student records. The React frontend uses an Express API to store records in MongoDB Atlas.
+A simple MERN Stack application for managing student records. The frontend supports two modes:
+
+- The GitHub Pages demo uses browser `localStorage` and does not need a hosted backend.
+- The full local MERN application uses the Express API and MongoDB Atlas.
+
+Records created in the GitHub Pages demo are saved only in the current browser. They are not synchronized with MongoDB or other browsers.
 
 ## Features
 
@@ -26,7 +31,9 @@ student-record-manager/
 ├── client/
 │   ├── src/
 │   │   ├── services/
-│   │   │   └── studentService.js
+│   │   │   ├── studentService.js
+│   │   │   ├── localStudentService.js
+│   │   │   └── studentDataService.js
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── styles.css
@@ -67,10 +74,17 @@ Copy-Item .\client\.env.example .\client\.env
 Copy-Item .\server\.env.example .\server\.env
 ```
 
-The frontend environment variable is:
+For local API development, the frontend environment variables are:
 
 ```text
+VITE_STORAGE_MODE=api
 VITE_API_URL=http://localhost:5000
+```
+
+To run the frontend locally using browser storage instead, set:
+
+```text
+VITE_STORAGE_MODE=local
 ```
 
 The backend environment variables are:
@@ -85,7 +99,9 @@ Add your MongoDB Atlas connection string to `MONGODB_URI` in your local `server/
 
 ## Run locally
 
-Start the backend in one terminal:
+### Full MERN mode
+
+The local `client/.env` uses API mode. Start the backend in one terminal:
 
 ```powershell
 Set-Location .\server
@@ -100,6 +116,21 @@ npm run dev
 ```
 
 Open the Vite URL shown in the frontend terminal (normally `http://localhost:5173/`). The backend runs on port `5000`.
+
+### Local browser-storage mode
+
+Set `VITE_STORAGE_MODE=local` in `client/.env`, then start only the frontend:
+
+```powershell
+Set-Location .\client
+npm run dev
+```
+
+This mode does not make API requests. Student records persist in the current browser's local storage and do not sync with MongoDB.
+
+### GitHub Pages
+
+The GitHub Actions Pages workflow builds the frontend with `VITE_STORAGE_MODE=local`. The hosted demo therefore works without a backend, with records saved only in each visitor's browser. It does not read or write MongoDB.
 
 ## API endpoints
 
@@ -119,9 +150,9 @@ Search, department, and sort query parameters can be combined. Student records u
 
 ## Testing
 
-1. Start the backend and frontend using the commands above.
-2. Check API availability at `http://localhost:5000/api/health`.
-3. In the app, add a record, then verify it appears in the list.
+1. Start the frontend in API mode and backend for the full MERN app, or start the frontend alone in local storage mode.
+2. For API mode, check availability at `http://localhost:5000/api/health`.
+3. In either mode, add a record, then verify it appears in the list and remains after a page refresh.
 4. Try editing and deleting the record, and try search, department filtering, and both CGPA sort directions.
 5. Build the frontend from the client folder:
 

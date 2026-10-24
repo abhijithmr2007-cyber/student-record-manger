@@ -3,8 +3,9 @@ import {
   addStudent,
   deleteStudent,
   getStudents,
+  isLocalStorageMode,
   updateStudent,
-} from "./services/studentService.js";
+} from "./services/studentDataService.js";
 
 const departments = [
   { value: "CSE", label: "Computer Science" },
@@ -46,7 +47,11 @@ function App() {
       sort: cgpaSort === "ascending" ? "asc" : cgpaSort === "descending" ? "desc" : "",
       signal: controller.signal,
     })
-      .then((data) => setStudents(data))
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setStudents(data);
+        }
+      })
       .catch((error) => {
         if (error.name !== "AbortError") {
           setLoadError(error.message);
@@ -446,7 +451,9 @@ function App() {
       </section>
 
       <footer className="page-footer">
-        Student records are saved to the database.
+        {isLocalStorageMode
+          ? "Records are saved only in this browser and are not synced with MongoDB."
+          : "Student records are saved to the database."}
       </footer>
     </main>
   );
